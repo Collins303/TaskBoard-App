@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6a5cf5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Taskboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap">
+<style>
+:root{--bg:#e6e8f6;--pn:#f7f8fe;--sf:#fff;--ink:#1a1b40;--mute:#7b80a0;--ln:#e8eaf5;--ac:#6a5cf5;--ac2:#9186ff;--nv:#1a1b4b;--nvt:#fff;--mint:#dff3ec;--mintt:#2c8a70;--pink:#ffe3ea;--pinkt:#d6336c;--amb:#fff1d6;--ambt:#a86a00;--sh:0 10px 30px rgba(84,72,180,.09)}
+:root[data-theme=dark]{--bg:#0c0d1e;--pn:#15162e;--sf:#1e1f3f;--ink:#eef0fc;--mute:#9a9fc6;--ln:#2c2e58;--ac:#8f83ff;--nv:#eef0fc;--nvt:#15162e;--mint:#173c34;--mintt:#7fe0c3;--pink:#4a1f31;--pinkt:#ff8fb1;--amb:#4a3a12;--ambt:#ffc766;--sh:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Plus Jakarta Sans",system-ui,sans-serif;padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.shell{max-width:1280px;margin:0 auto;background:var(--pn);border-radius:32px;display:grid;grid-template-columns:88px 1fr;overflow:hidden;min-height:calc(100vh - 32px);box-shadow:var(--sh)}
+.side{align-self:start;margin-top:150px;padding:18px 0;width:64px;background:linear-gradient(180deg,#7d70ff,#5443e6);border-radius:0 36px 36px 0;display:flex;flex-direction:column;align-items:center;gap:10px;position:sticky;top:20px}
+.side button{width:42px;height:42px;border-radius:14px;border:0;background:none;color:#e7e3ff;display:grid;place-items:center}
+.side button.on{background:#fff;color:#5443e6;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.main{padding:26px 28px 36px;min-width:0}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
+.tabs{display:flex;gap:4px}.tabs button{background:none;border:0;padding:9px 13px;border-radius:12px;color:var(--mute);font-weight:700;display:flex;gap:6px;align-items:center}.tabs button.on{color:var(--ink);background:var(--sf);box-shadow:var(--sh)}
+.srch{flex:1 1 180px;max-width:320px;display:flex;align-items:center;gap:8px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:0 12px;color:var(--mute)}.srch input{border:0;background:none;padding:10px 0;width:100%;outline:0;color:var(--ink)}
+.sp{flex:1}
+.seg{display:flex;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:3px}.seg button{border:0;background:none;padding:6px 11px;border-radius:9px;color:var(--mute);display:flex;gap:5px;align-items:center;font-weight:700}.seg .on{background:var(--ac);color:#fff}
+.btn{background:var(--nv);color:var(--nvt);border:0;border-radius:14px;padding:11px 18px;font-weight:700;display:inline-flex;gap:6px;align-items:center;justify-content:center}.btn.o{background:var(--sf);color:var(--ink);border:1px solid var(--ln)}.btn.p{background:var(--ac);color:#fff}
+.ib{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);display:grid;place-items:center}
+.dot{position:absolute;top:-5px;right:-5px;background:var(--pinkt);color:#fff;font-size:10px;font-weight:800;border-radius:99px;min-width:17px;height:17px;display:grid;place-items:center}
+.av{overflow:hidden;font-weight:800;background:var(--ac);color:#fff;border:0}.av img{width:100%;height:100%;object-fit:cover}
+.wrap{position:relative}.menu{position:absolute;right:0;top:48px;z-index:9;min-width:240px;display:grid;gap:8px}.menu small{color:var(--mute);word-break:break-all}
+.gd{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.c{background:var(--sf);border-radius:24px;padding:18px;box-shadow:var(--sh);min-width:0}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s12{grid-column:span 12}
+h1{font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-.03em;margin:0 0 8px}h3{margin:0;font-size:17px;font-weight:800}
+.hero{align-self:center}.mut{color:var(--mute);margin:4px 0}
+.qa{display:flex;gap:8px;margin-top:14px;max-width:470px}.qa input{flex:1;min-width:0;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:11px 14px}
+.st3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sc{border:0;border-radius:24px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;text-align:left;min-height:150px;box-shadow:var(--sh);font-weight:700}
+.sc b{font-size:38px;line-height:1;font-weight:800}.sc .ico{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.28);display:grid;place-items:center}
+.sc.a{background:linear-gradient(160deg,#7d70ff,#5443e6);color:#fff}.sc.b{background:var(--pink);color:var(--pinkt)}.sc.m{background:var(--mint);color:var(--mintt)}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.hd h2{margin:0;font-size:24px}.lk{background:none;border:0;color:var(--mute);font-size:12px;font-weight:700}
+.nt{display:flex;gap:10px;padding:10px 12px;border-radius:14px;background:var(--pn);margin-bottom:8px}.nt i{width:9px;height:9px;border-radius:50%;margin-top:6px;background:var(--ac);flex:none}.nt.od i{background:var(--pinkt)}.nt.td i{background:var(--ambt)}.nt b{display:block}.nt small{color:var(--mute)}
+.ch{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--pn);color:var(--mute)}.ch.hi{background:var(--pink);color:var(--pinkt)}.ch.md{background:var(--amb);color:var(--ambt)}.ch.lo{background:var(--mint);color:var(--mintt)}.ch.ac{background:color-mix(in srgb,var(--ac) 14%,transparent);color:var(--ac)}.ch.w{background:rgba(255,255,255,.25);color:#fff;align-self:flex-start}
+.as{border:1px solid var(--ln);border-radius:16px;padding:14px;margin-bottom:10px}.as h4{margin:8px 0;font-size:16px;line-height:1.25}.as .r{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--mute);font-size:12px}
+.dash{width:100%;border:2px dashed var(--ln);background:var(--pn);border-radius:16px;padding:13px;color:var(--ac);font-weight:800}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:10px}.wk button{border:0;background:none;padding:7px 0;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:1px}.wk small{color:var(--mute);font-size:11px}.wk .on{background:var(--ac);color:#fff}.wk .on small{color:#e2ddff}.wk .tdy b{color:var(--ac)}.wk .on.tdy b{color:#fff}.wk u{width:5px;height:5px;border-radius:50%;background:var(--ac);visibility:hidden}.wk .has u{visibility:visible}.wk .on u{background:#fff}
+.mini{border:0;background:none;color:var(--mute);width:30px;height:30px;border-radius:9px;display:grid;place-items:center}.mini:hover{background:var(--pn);color:var(--ink)}
+.ev{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--ln);align-items:center}.ev time{width:70px;color:var(--mute);font-size:12px;flex:none}.ev>div{flex:1;min-width:0}.ev small{color:var(--mute)}
+.tk{display:grid;grid-template-columns:24px 1fr 110px 40px auto;gap:12px;align-items:center;padding:11px;border-radius:16px}.tk:hover{background:var(--pn)}
+.tt{min-width:0}.tt b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tt small{color:var(--mute)}
+.dn .tt b,.dn>b,.ev.dn b,.fr.dn .g1>b,.stp .dn{text-decoration:line-through;color:var(--mute)}
+.pg{height:6px;background:var(--ln);border-radius:9px;overflow:hidden}.pg i{display:block;height:100%;background:var(--ac);border-radius:9px}.pc{font-weight:700;font-size:12px}
+.ck{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--ln);background:var(--sf);flex:none;display:grid;place-items:center;margin:0;cursor:pointer}.ck:checked{background:var(--ac);border-color:var(--ac)}.ck:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}.ck.sm{width:18px;height:18px}
+.ra{display:flex;gap:8px}.col{display:grid;gap:16px;align-content:start}.rgc{display:flex;gap:14px;align-items:center}.rgc small{color:var(--mute)}
+.rg{width:66px;height:66px;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--p)*1%),var(--ln) 0);display:grid;place-items:center;flex:none}.rg span{width:52px;height:52px;border-radius:50%;background:var(--sf);display:grid;place-items:center;font-weight:800;font-size:13px}
+.fc{background:linear-gradient(160deg,#7d70ff,#5443e6);color:#fff;border-radius:24px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-shadow:var(--sh)}.fc .big{font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1}.fc p{margin:0;opacity:.9}.fc .btn{background:#1a1b4b;color:#fff}
+.nx{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.nx h3{margin:2px 0}
+.row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}.row select,.fm input,.fm select,.fm textarea{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:9px 11px}
+.fr{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:14px 16px}.g1{flex:1;min-width:0}.mt{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.stp{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:13px}.acts{display:flex}
+.foot,.cx{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.dh{text-align:center;color:var(--mute);font-size:12px;font-weight:700}
+.mg button{aspect-ratio:1/.85;border:1px solid var(--ln);background:var(--pn);border-radius:14px;padding:6px 8px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;font-weight:700}.mg small{font-size:10px;opacity:.8}.mg .out{opacity:.45}.mg .tdy{border-color:var(--ac)}.mg .on{background:var(--ac);color:#fff;border-color:var(--ac);opacity:1}
+dialog{border:0;border-radius:26px;padding:24px;width:min(500px,94vw);background:var(--sf);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}dialog::backdrop{background:rgba(20,18,60,.5);backdrop-filter:blur(3px)}
+.fm{display:grid;gap:12px}.fm h3{font-size:20px}.fm label{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--mute)}.fm input,.fm select,.fm textarea{width:100%;color:var(--ink);background:var(--pn)}.r2,.r3{display:grid;gap:10px;grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr 1fr 1fr}.fa{display:flex;gap:8px;justify-content:flex-end}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--nv);color:var(--nvt);padding:11px 16px;border-radius:14px;display:none;gap:14px;align-items:center;z-index:50;max-width:92vw}.toast.on{display:flex}.toast button{background:none;border:0;color:var(--ac2);font-weight:800}
+.gate{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:16px;z-index:40}.gc{padding:32px;width:100%;max-width:400px;display:grid;gap:14px;justify-items:center;text-align:center}.gc h3{font-size:26px}.gc .row{width:100%;flex-wrap:nowrap}.gc .row input{flex:1;min-width:0;background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px}
+@media(max-width:1040px){.s3,.s4{grid-column:span 6}.s5,.s6,.s7{grid-column:span 12}}
+@media(max-width:720px){body{padding:0}.shell{border-radius:0;grid-template-columns:1fr}.side{display:none}.main{padding:18px 14px 30px}.s3,.s4,.s6{grid-column:span 12}.tk{grid-template-columns:24px 1fr auto}.tk .pg,.tk .pc{display:none}.st3{gap:10px}.sc{min-height:120px;padding:12px}.sc b{font-size:28px}h1{font-size:28px}.srch{order:9;max-width:none;flex-basis:100%}.hide{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+<symbol id="i-dl" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+<symbol id="i-l" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+<symbol id="i-r" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+<symbol id="i-ref" viewBox="0 0 24 24"><path d="M23 4v6h-6M20.5 15a9 9 0 1 1-2.1-9.4L23 10"/></symbol>
+</defs></svg>
+<div class="shell">
+<nav class="side" aria-label="Main">
+  <button data-a="nav" data-v="dash" title="Dashboard" aria-label="Dashboard"><svg class="i"><use href="#i-grid"/></svg></button>
+  <button data-a="nav" data-v="tasks" title="Tasks" aria-label="Tasks"><svg class="i"><use href="#i-check"/></svg></button>
+  <button data-a="nav" data-v="cal" title="Calendar" aria-label="Calendar"><svg class="i"><use href="#i-cal"/></svg></button>
+  <button data-a="bell" title="Notifications" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg></button>
+</nav>
+<main class="main">
+  <div class="top">
+    <div class="tabs"><button data-a="nav" data-v="dash">Dashboard</button><button data-a="nav" data-v="tasks">Tasks</button><button data-a="nav" data-v="cal">Calendar</button></div>
+    <label class="srch"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search tasks and events" aria-label="Search"></label>
+    <span class="sp"></span>
+    <div class="seg hide" id="seg"><button data-a="th" data-t="light"><svg class="i"><use href="#i-sun"/></svg>Light</button><button data-a="th" data-t="dark"><svg class="i"><use href="#i-moon"/></svg>Dark</button></div>
+    <button class="ib" data-a="bell" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg><span class="dot" id="bn" hidden></span></button>
+    <button class="btn o hide" data-a="exp"><svg class="i"><use href="#i-dl"/></svg>Export data</button>
+    <button class="btn" data-a="new"><svg class="i"><use href="#i-plus"/></svg>Add new task</button>
+    <div class="wrap"><button class="ib av" id="who" aria-label="Account"></button>
+      <div class="menu c" id="menu" hidden><div><b id="mname"></b><br><small id="mmail"></small><br><small id="msync"></small></div><button class="btn o" data-a="gcal"><svg class="i"><use href="#i-ref"/></svg>Sync Google Calendar</button><button class="btn o" id="out">Sign out</button></div></div>
+  </div>
+  <div id="view"></div>
+</main>
+</div>
+<dialog id="dlg"><form id="df" class="fm">
+  <h3 id="dh">New task</h3>
+  <label>Title<input id="f-title" type="text" maxlength="200" required></label>
+  <div class="r3"><label>Type<select id="f-kind"><option value="task">Task</option><option value="assignment">Assignment</option><option value="event">Event</option></select></label>
+  <label>Priority<select id="f-pri"><option value="1">Low</option><option value="2">Medium</option><option value="3">High</option></select></label>
+  <label>Category<select id="f-cat"></select></label></div>
+  <div class="r3"><label>Date<input id="f-due" type="date"></label><label>Start<input id="f-st" type="time"></label><label>End<input id="f-en" type="time"></label></div>
+  <label>Repeat<select id="f-rep"><option value="">Doesn't repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label>
+  <label>Steps (one per line)<textarea id="f-steps" rows="3" placeholder="Optional checklist"></textarea></label>
+  <div class="fa"><button type="button" class="btn o" id="ddel">Delete</button><button type="button" class="btn o" id="dcx">Cancel</button><button class="btn p">Save</button></div>
+</form></dialog>
+<div class="gate" id="gate" hidden><div class="c gc"><h3>Welcome to Taskboard</h3><p class="mut">Sign in to keep your own private tasks, assignments and schedule.</p><div id="gbtn"></div><p class="mut" id="gnote" hidden>Google sign-in and cloud sync turn on when you add your Firebase config (see README).</p><div class="mut">or</div><div class="row"><input type="text" id="nm" placeholder="Your name" maxlength="40" aria-label="Your name"><button class="btn p" id="go">Continue</button></div></div></div>
+<div class="toast" id="toast" role="status"><span id="tmsg"></span><button id="undo">Undo</button></div>
+<input type="file" id="file" accept="application/json" hidden>
+<script src="config.js"></script>
+<script>
+const CATS=["Work","Personal","Health","Finance","Learning","Errands"],KEY="taskboard.v2",FIREBASE_CONFIG=window.FIREBASE_CONFIG||null;
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`,pad=n=>String(n).padStart(2,"0");
+const ds=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()),today=()=>ds(new Date()),pd=s=>new Date(s+"T00:00");
+const addD=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)},fmt=s=>pd(s).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+const mins=t=>+t.slice(0,2)*60+ +t.slice(3,5),hm=d=>pad(d.getHours())+":"+pad(d.getMinutes()),addM=(t,n)=>{const x=Math.min(mins(t)+n,1439);return pad(Math.floor(x/60))+":"+pad(x%60)};
+const t12=t=>{const h=+t.slice(0,2);return (h%12||12)+":"+t.slice(3,5)+(h<12?" AM":" PM")},tr=t=>t12(t.st)+(t.en?" – "+t12(t.en):"");
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const mk=o=>({id:uid(),title:"",kind:"task",pri:2,cat:"Personal",due:"",st:"",en:"",done:false,sub:[],rep:"",...o});
+const isOd=t=>!t.done&&t.kind!=="event"&&t.due&&t.due<today();
+const prog=t=>t.done?100:(t.sub||[]).length?Math.round(t.sub.filter(x=>x.d).length/t.sub.length*100):0;
+const byDue=(x,y)=>(x.due||"9999").localeCompare(y.due||"9999")||(x.st||"99").localeCompare(y.st||"99");
+const KL={task:"Task",assignment:"Assignment",event:"Event"},PN=["","Low","Medium","High"],PC=["","lo","md","hi"],mmss=ms=>pad(Math.floor(ms/60000))+":"+pad(Math.floor(ms/1000)%60);
+const NP=()=>"Notification" in window?Notification.permission:"denied";
+const dueL=t=>!t.due?"":t.due===today()?"Today":t.due===addD(today(),1)?"Tomorrow":fmt(t.due);
+const nextDue=t=>{const b=t.due?pd(t.due):new Date();if(t.rep==="daily")b.setDate(b.getDate()+1);else if(t.rep==="weekly")b.setDate(b.getDate()+7);else b.setMonth(b.getMonth()+1);return ds(b)};
+let S={tasks:[],view:"dash",f:"all",cat:"all",sort:"due",q:"",sel:today(),edit:null},U=null,FB=null,unsub=null,ref=null,pt=null,last=null,tt=null,focus={end:0},P={theme:"",dis:[],n:[]};
+try{Object.assign(P,JSON.parse(localStorage.getItem(KEY+".prefs")||"{}"))}catch(e){}
+const pp=()=>{try{localStorage.setItem(KEY+".prefs",JSON.stringify(P))}catch(e){}};
+document.documentElement.dataset.theme=P.theme||(window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+
+/* ---------- storage ---------- */
+const tk=()=>KEY+".tasks."+U.id;
+function load(){S.tasks=[];try{const r=JSON.parse(localStorage.getItem(tk()));if(r&&Array.isArray(r.tasks)){S.tasks=r.tasks;return}}catch(e){}
+  const t=today();S.tasks=[mk({title:"Plan my week",kind:"event",due:t,st:"09:00",en:"09:30",cat:"Work",pri:3}),mk({title:"Finish project brief",kind:"assignment",due:addD(t,2),cat:"Work",pri:3,sub:[{id:uid(),t:"Outline",d:true},{id:uid(),t:"Draft",d:false}]}),mk({title:"Try the quick add box above",due:t})]}
+function save(){if(!U)return;try{localStorage.setItem(tk(),JSON.stringify({tasks:S.tasks}))}catch(e){}push()}
+function commit(){save();render()}
+function toast(m,u){clearTimeout(tt);$("tmsg").textContent=m;$("undo").style.display=u?"":"none";$("toast").classList.add("on");tt=setTimeout(()=>$("toast").classList.remove("on"),5000)}
+function dl(txt,name,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+/* ---------- calendar + notifications ---------- */
+function gcUrl(t){const d=(t.due||today()).replace(/-/g,""),e=addD(t.due||today(),1).replace(/-/g,""),z=x=>d+"T"+x.replace(":","")+"00";
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(t.title)+"&dates="+(t.st?z(t.st)+"/"+z(t.en||addM(t.st,60)):d+"/"+e)}
+function ics(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Taskboard//EN"],st=new Date().toISOString().replace(/[-:]|\.\d+/g,"");
+  S.tasks.filter(t=>t.due&&!t.ext).forEach(t=>{const d=t.due.replace(/-/g,""),z=x=>d+"T"+x.replace(":","")+"00";
+    L.push("BEGIN:VEVENT","UID:"+t.id+"@taskboard","DTSTAMP:"+st,"SUMMARY:"+t.title.replace(/[\r\n,;]/g," "),
+      t.st?"DTSTART:"+z(t.st):"DTSTART;VALUE=DATE:"+d,t.st?"DTEND:"+z(t.en||addM(t.st,60)):"DTEND;VALUE=DATE:"+addD(t.due,1).replace(/-/g,""),"END:VEVENT")});
+  L.push("END:VCALENDAR");dl(L.join("\r\n"),"taskboard.ics","text/calendar");toast("Calendar file downloaded. Open it to add items to Apple, Outlook or Google Calendar.")}
+async function gcal(){if(!FB||!U||!U.id.startsWith("g:")){toast("Sign in with Google (needs Firebase setup) to sync your calendar. You can still export a .ics file.");return}
+  try{const p=new FB.Au.GoogleAuthProvider();p.addScope("https://www.googleapis.com/auth/calendar.readonly");
+    const tok=FB.Au.GoogleAuthProvider.credentialFromResult(await FB.Au.signInWithPopup(FB.auth,p)).accessToken,a=new Date(),b=new Date();a.setDate(a.getDate()-7);b.setDate(b.getDate()+60);
+    const r=await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=250&timeMin="+a.toISOString()+"&timeMax="+b.toISOString(),{headers:{Authorization:"Bearer "+tok}});
+    if(!r.ok)throw 0;const old=new Map(S.tasks.filter(t=>t.ext).map(t=>[t.id,t.done]));
+    const ev=((await r.json()).items||[]).filter(e=>e.status!=="cancelled"&&e.summary&&e.start).map(e=>{const s=e.start.dateTime?new Date(e.start.dateTime):null,n=e.end&&e.end.dateTime?new Date(e.end.dateTime):null,id="g_"+e.id;
+      return mk({id,title:e.summary.slice(0,200),kind:"event",cat:"Work",due:s?ds(s):e.start.date,st:s?hm(s):"",en:n?hm(n):"",done:!!old.get(id),ext:true})});
+    S.tasks=S.tasks.filter(t=>!t.ext).concat(ev);commit();toast("Imported "+ev.length+" Google Calendar events")}
+  catch(e){toast("Couldn't reach Google Calendar. Check the calendar setup steps in the README.")}}
+function notifs(){const td=today(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),n=[];
+  S.tasks.forEach(t=>{if(t.done)return;
+    if(isOd(t))n.push({id:"o"+t.id+td,tx:t.title,sb:"Overdue since "+fmt(t.due),tone:"od"});
+    else if(t.due===td&&t.st&&mins(t.st)>=nm&&mins(t.st)-nm<=180){const m=mins(t.st)-nm;n.push({id:"u"+t.id+td,tx:t.title,sb:"Starts in "+(m<60?m+" min":Math.round(m/60)+" h"),tone:"ev"})}
+    else if(t.due===td&&t.kind!=="event")n.push({id:"d"+t.id+td,tx:t.title,sb:"Due today",tone:"td"})});
+  return n.filter(x=>!P.dis.includes(x.id))}
+function ping(t,b){toast(t+" · "+b);if(NP()==="granted")try{new Notification(t,{body:b,icon:"icon-192.png"})}catch(e){}}
+function tick(){const now=new Date(),td=today(),nm=now.getHours()*60+now.getMinutes();
+  S.tasks.forEach(t=>{if(t.done||t.due!==td||!t.st)return;const m=mins(t.st)-nm,k=t.id+td;if(m>=0&&m<=10&&!P.n.includes(k)){P.n.push(k);P.n=P.n.slice(-300);pp();ping(t.title,m?"Starts in "+m+" min":"Starting now")}})}
+function fUpd(){if(focus.end&&Date.now()>=focus.end){focus.end=0;ping("Focus session complete","Time for a short break.");render();return}
+  const e=$("ftime");if(e)e.textContent=mmss(focus.end?focus.end-Date.now():1500000)}
+let k=0;setInterval(()=>{if(!U)return;fUpd();if(++k%20===0){tick();const n=notifs().length;$("bn").hidden=!n;$("bn").textContent=n}},1000);
+
+/* ---------- views ---------- */
+const chip=t=>`<span class="ch ${PC[t.pri]}">${PN[t.pri]}</span>`,first=()=>(U.name||"there").split(" ")[0];
+function strip(){const s=pd(S.sel),m=new Date(s);m.setDate(s.getDate()-((s.getDay()+6)%7));let h="";
+  for(let i=0;i<7;i++){const d=new Date(m);d.setDate(m.getDate()+i);const k=ds(d);h+=`<button data-a="day" data-d="${k}" class="${k===S.sel?"on ":""}${k===today()?"tdy ":""}${S.tasks.some(t=>t.due===k)?"has":""}" aria-label="${k}"><small>${d.toLocaleDateString(undefined,{weekday:"short"})}</small><b>${d.getDate()}</b><u></u></button>`}
+  return `<div class="wk">${h}</div>`}
+function sched(d,max){const a=S.tasks.filter(t=>t.due===d).sort((x,y)=>(x.st||"99").localeCompare(y.st||"99")||y.pri-x.pri);
+  return a.length?a.slice(0,max).map(t=>`<div class="ev${t.done?" dn":""}" data-id="${t.id}"><time>${t.st?t12(t.st):KL[t.kind]}</time><div><b>${esc(t.title)}</b><br><small>${t.st&&t.en?tr(t):esc(t.cat)}</small></div><button class="mini" data-a="ed" aria-label="Edit">${ic("edit")}</button></div>`).join(""):`<p class="mut">Nothing scheduled for ${d===today()?"today":fmt(d)}.</p>`}
+function tRow(t){const p=prog(t);return `<div class="tk${t.done?" dn":""}" data-id="${t.id}"><input class="ck" type="checkbox" data-a="tg" ${t.done?"checked":""} aria-label="Mark complete"><div class="tt"><b>${esc(t.title)}</b><small>${esc(t.cat)}${t.st?" · "+t12(t.st):""}${isOd(t)?" · overdue":""}</small></div><div class="pg"><i style="width:${p}%"></i></div><span class="pc">${p}%</span><button class="mini" data-a="ed" aria-label="Edit">${ic("edit")}</button></div>`}
+function vDash(){const td=today(),o=S.tasks,it=o.filter(t=>t.kind!=="event"),dn=it.filter(t=>t.done).length,pc=it.length?Math.round(dn/it.length*100):0,
+  dueT=o.filter(t=>!t.done&&t.due===td).length,odc=o.filter(isOd).length,nf=notifs(),as=o.filter(t=>t.kind==="assignment"&&!t.done).sort(byDue).slice(0,2),
+  tl=it.filter(t=>t.due===td||isOd(t)).sort((x,y)=>x.done-y.done||byDue(x,y)).slice(0,5),nw=new Date(),nm=nw.getHours()*60+nw.getMinutes(),
+  nx=o.filter(t=>!t.done&&t.st&&t.due&&(t.due>td||(t.due===td&&mins(t.st)>=nm))).sort(byDue)[0],top=it.filter(t=>!t.done).sort((x,y)=>y.pri-x.pri||byDue(x,y))[0],
+  cs=CATS.map(c=>{const a=it.filter(t=>t.cat===c);return{c,n:a.length,p:a.length?Math.round(a.filter(t=>t.done).length/a.length*100):0}}).filter(x=>x.n).sort((a,b)=>b.n-a.n).slice(0,2);
+  return `<div class="gd">
+<section class="s5 hero"><h1>Hi, ${esc(first())}!<br>What's the plan for today?</h1><p class="mut">${dueT} due today${odc?" · "+odc+" overdue":""}. Add things the way you'd say them.</p>
+<div class="qa"><input id="qa" type="text" placeholder="Call client tomorrow at 3pm" aria-label="Quick add" maxlength="200"><button class="btn p" data-a="qa">Add</button></div></section>
+<div class="s7 st3"><button class="sc a" data-a="go" data-f="today"><span class="ico">${ic("cal")}</span><span>Due today</span><b>${dueT}</b></button>
+<button class="sc b" data-a="go" data-f="today"><span class="ico">${ic("bell")}</span><span>Overdue</span><b>${odc}</b></button>
+<button class="sc m" data-a="go" data-f="done"><span class="ico">${ic("check")}</span><span>Completed</span><b>${pc}%</b></button></div>
+<section class="c s4" id="nc"><div class="hd"><h3>Notifications</h3><button class="lk" data-a="clr">Clear</button></div>${nf.length?nf.slice(0,4).map(n=>`<div class="nt ${n.tone}"><i></i><div><b>${esc(n.tx)}</b><small>${n.sb}</small></div></div>`).join(""):'<p class="mut">You\'re all caught up.</p>'}${NP()==="default"?'<button class="dash" data-a="rem">Enable reminders</button>':""}</section>
+<section class="c s4"><div class="hd"><h3>Assignments</h3><button class="lk" data-a="go" data-f="all">View all</button></div>${as.map(t=>`<div class="as" data-id="${t.id}"><span class="ch ac">${esc(t.cat)}</span><h4>${esc(t.title)}</h4><div class="r"><span>${chip(t)} ${dueL(t)||"No date"}${(t.sub||[]).length?" · "+prog(t)+"%":""}</span><button class="mini" data-a="ed" aria-label="Edit">${ic("edit")}</button></div></div>`).join("")}<button class="dash" data-a="new" data-k="assignment">+ Add new assignment</button></section>
+<section class="c s4"><div class="hd"><h3>${pd(S.sel).toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h3><span><button class="mini" data-a="wk" data-n="-7" aria-label="Previous week">${ic("l")}</button><button class="mini" data-a="wk" data-n="7" aria-label="Next week">${ic("r")}</button></span></div>${strip()}${sched(S.sel,4)}</section>
+<section class="c s6"><div class="hd"><h3>Today tasks</h3><button class="lk" data-a="go" data-f="all">View all</button></div>${tl.length?tl.map(tRow).join(""):'<p class="mut">Nothing due today. Add a task above.</p>'}</section>
+<section class="fc s3"><span class="ch w">Focus</span><div class="big" id="ftime">${mmss(focus.end?Math.max(0,focus.end-Date.now()):1500000)}</div><p>${top?"Next up: "+esc(top.title):"Nothing pending. Nice work."}</p><button class="btn" data-a="fs">${focus.end?"Stop session":"Start 25 min focus"}</button></section>
+<div class="s3 col">${cs.length?cs.map(x=>`<div class="c rgc"><div class="rg" style="--p:${x.p}"><span>${x.p}%</span></div><div><b>${esc(x.c)}</b><br><small>${x.n} item${x.n>1?"s":""}</small></div></div>`).join(""):'<div class="c"><p class="mut">Progress by category shows up here.</p></div>'}</div>
+<section class="c s12 nx">${nx?`<div><small class="mut">Up next · ${dueL(nx)}</small><h3>${esc(nx.title)}</h3><small class="mut">${tr(nx)} · ${esc(nx.cat)}</small></div><div class="ra"><button class="btn o" data-id="${nx.id}" data-a="ed">Reschedule</button><button class="btn p" data-id="${nx.id}" data-a="gc">Add to Google Calendar</button></div>`:'<p class="mut">No upcoming timed items. Add an event with a start time to see it here.</p>'}</section></div>`}
+function fRow(t){return `<div class="c fr${t.done?" dn":""}" data-id="${t.id}"><input class="ck" type="checkbox" data-a="tg" ${t.done?"checked":""} aria-label="Mark complete"><div class="g1"><b>${esc(t.title)}</b><div class="mt"><span class="ch ac">${KL[t.kind]}</span>${chip(t)}<span class="ch">${esc(t.cat)}</span>${t.due?`<span class="ch ${isOd(t)?"hi":""}">${dueL(t)}${t.st?" · "+t12(t.st):""}</span>`:""}${t.rep?`<span class="ch">↻ ${t.rep}</span>`:""}${t.ext?'<span class="ch ac">Google</span>':""}</div>${(t.sub||[]).map(x=>`<div class="stp"><input class="ck sm" type="checkbox" data-a="sd" data-s="${x.id}" ${x.d?"checked":""} aria-label="Step done"><span class="${x.d?"dn":""}">${esc(x.t)}</span></div>`).join("")}</div><div class="acts"><button class="mini" data-a="gc" title="Add to Google Calendar" aria-label="Add to Google Calendar">${ic("cal")}</button><button class="mini" data-a="ed" aria-label="Edit">${ic("edit")}</button><button class="mini" data-a="rm" aria-label="Delete">${ic("trash")}</button></div></div>`}
+function vTasks(){const a=S.tasks.filter(t=>(S.f==="all"||(S.f==="done")===t.done)&&(S.f!=="today"||(t.due&&t.due<=today()))&&(S.cat==="all"||t.cat===S.cat)&&(!S.q||t.title.toLowerCase().includes(S.q)));
+  a.sort(S.sort==="pri"?(x,y)=>y.pri-x.pri||byDue(x,y):byDue);
+  return `<div class="hd"><h2>Tasks</h2><div class="seg">${[["all","All"],["today","Today"],["active","Active"],["done","Done"]].map(([k,l])=>`<button data-a="ft" data-f="${k}" class="${S.f===k?"on":""}">${l}</button>`).join("")}</div></div>
+<div class="row"><select id="fcat" aria-label="Category"><option value="all">All categories</option>${CATS.map(c=>`<option${S.cat===c?" selected":""}>${c}</option>`).join("")}</select><select id="fsort" aria-label="Sort"><option value="due">Sort by date</option><option value="pri"${S.sort==="pri"?" selected":""}>Sort by priority</option></select></div>
+${a.length?a.map(fRow).join(""):'<div class="c"><p class="mut">Nothing here. Try another filter or add a task.</p></div>'}
+<div class="foot"><button class="btn o" data-a="cd">Clear done</button><button class="btn o" data-a="imp">Import</button></div>`}
+function vCal(){const s=pd(S.sel),f=new Date(s.getFullYear(),s.getMonth(),1),st=new Date(f);st.setDate(1-((f.getDay()+6)%7));let c="";
+  for(let i=0;i<42;i++){const d=new Date(st);d.setDate(st.getDate()+i);const k=ds(d),n=S.tasks.filter(t=>t.due===k).length;c+=`<button data-a="day" data-d="${k}" class="${d.getMonth()!==s.getMonth()?"out ":""}${k===S.sel?"on ":""}${k===today()?"tdy":""}"><span>${d.getDate()}</span><small>${n?n+" item"+(n>1?"s":""):""}</small></button>`}
+  return `<div class="gd"><section class="c s7"><div class="hd"><h3>${s.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</h3><span><button class="mini" data-a="mo" data-n="-1" aria-label="Previous month">${ic("l")}</button><button class="btn o" data-a="td">Today</button><button class="mini" data-a="mo" data-n="1" aria-label="Next month">${ic("r")}</button></span></div><div class="mg">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(x=>`<div class="dh">${x}</div>`).join("")}${c}</div></section>
+<section class="c s5"><div class="hd"><h3>${s.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"})}</h3><button class="btn p" data-a="new" data-k="event">${ic("plus")}Event</button></div>${sched(S.sel,99)}<div class="cx"><button class="btn o" data-a="gcal">${ic("ref")}Sync Google Calendar</button><button class="btn o" data-a="ics">${ic("dl")}Export .ics</button></div></section></div>`}
+function render(){if(!U)return;document.querySelectorAll("[data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===S.view));
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.t===document.documentElement.dataset.theme));
+  const n=notifs().length;$("bn").hidden=!n;$("bn").textContent=n;document.title=(S.tasks.some(isOd)?"("+S.tasks.filter(isOd).length+") ":"")+"Taskboard";
+  $("view").innerHTML=({dash:vDash,tasks:vTasks,cal:vCal})[S.view]()}
+
+/* ---------- actions ---------- */
+function quick(v){let due="",st="",m;v=v.trim();if(!v)return;
+  if(/\btomorrow\b/i.test(v)){due=addD(today(),1);v=v.replace(/\btomorrow\b/i,"")}else if(/\btoday\b/i.test(v)){due=today();v=v.replace(/\btoday\b/i,"")}
+  if(m=v.match(/\b(?:at\s+)?(\d{1,2})(?::(\d\d))?\s?(am|pm)\b/i)){let h=+m[1]%12;if(/pm/i.test(m[3]))h+=12;st=pad(h)+":"+(m[2]||"00");v=v.replace(m[0],"");if(!due)due=today()}
+  S.tasks.unshift(mk({title:v.replace(/\s+/g," ").trim()||"Untitled",due,st,en:st?addM(st,60):""}));commit();toast("Added")}
+function openDlg(t,k){S.edit=t?t.id:null;const f=(i,v)=>{$(i).value=v};$("dh").textContent=t?"Edit item":"New "+(KL[k]||"task").toLowerCase();
+  f("f-title",t?t.title:"");f("f-kind",t?t.kind:k||"task");f("f-pri",t?t.pri:2);f("f-cat",t?t.cat:"Personal");f("f-due",t?t.due:(k==="event"||S.view==="cal")?S.sel:"");
+  f("f-st",t?t.st:"");f("f-en",t?t.en:"");f("f-rep",t?t.rep:"");f("f-steps",t?(t.sub||[]).map(x=>x.t).join("\n"):"");$("ddel").hidden=!t;$("dlg").showModal();$("f-title").focus()}
+function saveDlg(){const v=$("f-title").value.trim();if(!v){$("f-title").focus();return}
+  const old=S.tasks.find(x=>x.id===S.edit),sub=$("f-steps").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,30).map(l=>{const m=old&&(old.sub||[]).find(x=>x.t===l);return{id:m?m.id:uid(),t:l.slice(0,120),d:m?m.d:false}});
+  const o={title:v,kind:$("f-kind").value,pri:+$("f-pri").value,cat:$("f-cat").value,due:$("f-due").value,st:$("f-st").value,en:$("f-en").value,rep:$("f-rep").value,sub};
+  if(o.kind==="event"&&!o.due)o.due=S.sel;if(!o.st)o.en="";else if(o.en&&o.en<o.st)o.en=o.st;
+  if(old)Object.assign(old,o);else S.tasks.unshift(mk(o));$("dlg").close();commit()}
+const A={tg:t=>{t.done=!t.done;if(t.done&&t.rep){const n={...t,id:uid(),done:false,due:nextDue(t),sub:(t.sub||[]).map(x=>({...x,id:uid(),d:false}))};S.tasks.splice(S.tasks.indexOf(t),0,n);toast("Next "+t.rep+" repeat added for "+fmt(n.due));t.rep=""}commit()},
+  ed:t=>openDlg(t),rm:t=>{const i=S.tasks.indexOf(t);S.tasks.splice(i,1);last={t,i};commit();toast("Deleted",true)},
+  sd:(t,b)=>{const x=(t.sub||[]).find(y=>y.id===b.dataset.s);if(x){x.d=!x.d;commit()}},gc:t=>window.open(gcUrl(t),"_blank","noopener")};
+const G={nav:b=>{S.view=b.dataset.v;render();scrollTo(0,0)},bell:()=>{S.view="dash";render();const n=$("nc");if(n)n.scrollIntoView({behavior:"smooth"})},
+  new:b=>openDlg(null,b.dataset.k),go:b=>{S.view="tasks";S.f=b.dataset.f;render()},ft:b=>{S.f=b.dataset.f;render()},day:b=>{S.sel=b.dataset.d;render()},
+  wk:b=>{S.sel=addD(S.sel,+b.dataset.n);render()},mo:b=>{const d=pd(S.sel);d.setMonth(d.getMonth()+ +b.dataset.n,1);S.sel=ds(d);render()},td:()=>{S.sel=today();render()},
+  th:b=>{P.theme=b.dataset.t;document.documentElement.dataset.theme=P.theme;pp();render()},qa:()=>{quick($("qa").value);const n=$("qa");if(n)n.focus()},
+  clr:()=>{notifs().forEach(n=>P.dis.push(n.id));P.dis=P.dis.slice(-300);pp();render()},rem:()=>{if("Notification" in window)Notification.requestPermission().then(render)},
+  fs:()=>{focus.end=focus.end?0:Date.now()+1500000;render()},exp:()=>dl(JSON.stringify({tasks:S.tasks},null,2),"taskboard-"+today()+".json","application/json"),
+  ics,gcal,imp:()=>$("file").click(),cd:()=>{const n=S.tasks.filter(t=>t.done).length;if(!n)return toast("No completed tasks to clear");S.tasks=S.tasks.filter(t=>!t.done);commit();toast(n+" completed cleared")}};
+document.addEventListener("click",e=>{if(!e.target.closest(".wrap"))$("menu").hidden=true;const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,li=b.closest("[data-id]"),t=li&&S.tasks.find(x=>x.id===li.dataset.id);
+  if(t&&A[a])A[a](t,b);else if(G[a])G[a](b)});
+document.addEventListener("change",e=>{if(e.target.id==="fcat"){S.cat=e.target.value;render()}if(e.target.id==="fsort"){S.sort=e.target.value;render()}});
+document.addEventListener("keydown",e=>{if(e.target.id==="qa"&&e.key==="Enter")return G.qa();
+  if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)||e.metaKey||e.ctrlKey||$("dlg").open||!U)return;
+  if(e.key==="n"){e.preventDefault();openDlg(null)}if(e.key==="/"){e.preventDefault();$("q").focus()}});
+$("q").oninput=e=>{S.q=e.target.value.trim().toLowerCase();if(S.q&&S.view!=="tasks"){S.view="tasks";S.f="all"}render()};
+$("df").onsubmit=e=>{e.preventDefault();saveDlg()};$("dcx").onclick=()=>$("dlg").close();
+$("ddel").onclick=()=>{const t=S.tasks.find(x=>x.id===S.edit);$("dlg").close();if(t)A.rm(t)};
+$("undo").onclick=()=>{if(last){S.tasks.splice(last.i,0,last.t);last=null;commit();$("toast").classList.remove("on")}};
+$("f-cat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
+$("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result),a=Array.isArray(d)?d:d.tasks;if(!Array.isArray(a))throw 0;
+  const tm=x=>/^\d\d:\d\d$/.test(x||"")?x:"",ok=a.filter(t=>t&&typeof t.title==="string").map(t=>mk({title:t.title.slice(0,200),kind:KL[t.kind]?t.kind:"task",pri:[1,2,3].includes(+t.pri)?+t.pri:2,cat:CATS.includes(t.cat)?t.cat:"Personal",due:/^\d{4}-\d\d-\d\d$/.test(t.due||"")?t.due:"",st:tm(t.st),en:tm(t.en),done:!!t.done,rep:["daily","weekly","monthly"].includes(t.rep)?t.rep:"",sub:Array.isArray(t.sub)?t.sub.filter(x=>x&&typeof x.t==="string").map(x=>({id:uid(),t:x.t.slice(0,120),d:!!x.d})):[]}));
+  S.tasks=ok.concat(S.tasks);commit();toast("Imported "+ok.length+" items")}catch(x){toast("That file isn't a valid Taskboard export")}};r.readAsText(f);e.target.value=""};
+
+/* ---------- accounts + Firebase ---------- */
+async function initFirebase(){if(!FIREBASE_CONFIG)return false;const b="https://www.gstatic.com/firebasejs/10.12.2/";
+  const [A,Au,Fs]=await Promise.all([import(b+"firebase-app.js"),import(b+"firebase-auth.js"),import(b+"firebase-firestore.js")]);
+  const app=A.initializeApp(FIREBASE_CONFIG);FB={auth:Au.getAuth(app),db:Fs.getFirestore(app),Au,Fs};return true}
+function googleBtn(){const b=document.createElement("button");b.className="btn p";b.textContent="Continue with Google";
+  b.onclick=async()=>{try{await FB.Au.signInWithPopup(FB.auth,new FB.Au.GoogleAuthProvider())}catch(e){toast("Google sign-in failed. Try again.")}};$("gbtn").appendChild(b)}
+function startSync(){if(!FB||!U||!U.id.startsWith("g:"))return;ref=FB.Fs.doc(FB.db,"users",U.id.slice(2));$("msync").textContent="Connecting…";
+  unsub=FB.Fs.onSnapshot(ref,snap=>{if(snap.metadata.hasPendingWrites)return;const d=snap.data();
+    if(snap.exists()&&d&&Array.isArray(d.tasks)){S.tasks=d.tasks;try{localStorage.setItem(tk(),JSON.stringify({tasks:S.tasks}))}catch(e){}if(!$("dlg").open)render()}else push();
+    $("msync").textContent="Synced to cloud"},()=>{$("msync").textContent="Cloud sync unavailable"})}
+function stopSync(){if(unsub){unsub();unsub=null}clearTimeout(pt);ref=null}
+function push(){if(!FB||!unsub||!ref)return;clearTimeout(pt);$("msync").textContent="Saving…";
+  pt=setTimeout(()=>FB.Fs.setDoc(ref,{tasks:S.tasks,updated:Date.now()}).then(()=>{$("msync").textContent="Synced to cloud"}).catch(()=>{$("msync").textContent="Cloud sync unavailable"}),600)}
+function setUser(u,keep){stopSync();U=u;if(keep){try{localStorage.setItem(KEY+".user",JSON.stringify(u))}catch(e){}}
+  $("gate").hidden=true;$("who").innerHTML=U.picture?`<img src="${esc(U.picture)}" alt="" referrerpolicy="no-referrer">`:esc((U.name||"?")[0].toUpperCase());
+  $("mname").textContent=U.name;$("mmail").textContent=U.email||"Saved on this device";$("msync").textContent="";load();render();startSync()}
+$("go").onclick=()=>{const n=$("nm").value.trim();if(!n){$("nm").focus();return}setUser({id:"l:"+n.toLowerCase(),name:n},true)};
+$("nm").onkeydown=e=>{if(e.key==="Enter")$("go").click()};
+$("who").onclick=()=>{$("menu").hidden=!$("menu").hidden};
+$("out").onclick=()=>{stopSync();if(FB)FB.Au.signOut(FB.auth).catch(()=>{});try{localStorage.removeItem(KEY+".user")}catch(e){}U=null;S.tasks=[];$("menu").hidden=true;$("gate").hidden=false;$("nm").value=""};
+let sv=null;try{sv=JSON.parse(localStorage.getItem(KEY+".user"))}catch(e){}
+(async()=>{let ok=false;try{ok=await initFirebase()}catch(e){toast("Cloud sync could not start. Using this device only.")}
+  const local=sv&&sv.id&&sv.id.startsWith("l:");if(!FIREBASE_CONFIG)$("gnote").hidden=false;
+  if(ok){googleBtn();FB.Au.onAuthStateChanged(FB.auth,u=>{
+    if(u){if(U&&U.id==="g:"+u.uid)return;setUser({id:"g:"+u.uid,name:u.displayName||u.email,email:u.email,picture:u.photoURL},false)}
+    else if(!(U&&U.id.startsWith("l:"))){U=null;$("gate").hidden=false}})}
+  if(local)setUser(sv,false);else if(!ok)$("gate").hidden=false})();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
